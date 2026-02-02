@@ -1,43 +1,37 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { ProductRegister } from "../ProductRegister";
+import { ProductEdit } from "../ProductEdit";
 
-const ProductsPanel = () => {
-  const { slug } = useParams();
+const ProductsManager = ({ slug, tenant }) => {
   const [products, setProducts] = useState([]);
-  const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [openModal, setOpenModal] = useState(false);
 
-  // Carrega os produtos da API
-  const fetchData = async () => {
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  const fetchProducts = async () => {
     try {
-      const [tenantRes, productsRes] = await Promise.all([
-        axios.get(`http://localhost:8080/api/tenants/${slug}`),
-        axios.get(`http://localhost:8080/api/products/tenant/${slug}`),
-      ]);
-
-      setTenant(tenantRes.data);
+      const productsRes = await axios.get(
+        `http://localhost:8080/api/products/tenant/${slug}`,
+      );
       setProducts(productsRes.data);
     } catch (err) {
       console.error("Erro ao carregar dados:", err);
-      // alert("Erro ao carregar produtos. Verifique o console.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchProducts();
   }, [slug]);
 
-  // Função placeholder para exclusão
   const handleDelete = async (id) => {
     if (window.confirm("Tem certeza que deseja excluir este produto?")) {
       try {
         await axios.delete(`http://localhost:8080/api/products/${id}`);
-        fetchData(); // Recarrega a lista
+        fetchProducts(); //
         alert("Produto excluído com sucesso!");
       } catch (err) {
         console.error(err);
@@ -48,7 +42,7 @@ const ProductsPanel = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-100">
+      <div className="flex h-full items-center justify-center">
         <div className="text-xl font-semibold text-gray-600 animate-pulse">
           Carregando Estoque...
         </div>
@@ -56,20 +50,13 @@ const ProductsPanel = () => {
     );
   }
 
-  if (!tenant) return <div>Erro ao carregar loja.</div>;
-
+  // Adjusted layout: removed min-h-screen and bg-gray-50 from outer wrapper to fit inside AdminPanel
+  // Kept internal structure
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+    <div>
+      <div className="mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <button
-              onClick={() => navigate(-1)}
-              className="mb-5 hover:cursor-pointer hover:underline text-gray-600 flex items-center gap-1"
-            >
-              {" "}
-              ← Voltar
-            </button>
             <h1 className="text-3xl font-bold text-gray-800">
               Gerenciar Estoque
             </h1>
@@ -84,6 +71,7 @@ const ProductsPanel = () => {
             </p>
           </div>
           <button
+            onClick={() => setOpenModal(true)}
             className=" text-white font-bold py-2.5 px-6 rounded-lg shadow-md transition-all flex items-center gap-2 hover:opacity-75 hover:cursor-pointer"
             style={{
               backgroundColor: tenant.primaryColor,
@@ -106,7 +94,6 @@ const ProductsPanel = () => {
           </button>
         </div>
 
-        {/* Tabela de Produtos */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -196,7 +183,10 @@ const ProductsPanel = () => {
                         R$ {product.price?.toFixed(2)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button className="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-md transition-colors mr-2 hover:cursor-pointer">
+                        <button
+                          onClick={() => setEditingProduct(product)}
+                          className="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-md transition-colors mr-2 hover:cursor-pointer"
+                        >
                           Editar
                         </button>
                         <button
@@ -214,8 +204,74 @@ const ProductsPanel = () => {
           </div>
         </div>
       </div>
+      {/* Modal de Cadastro */}
+      {openModal && (
+        <div className="fixed inset-0 bg-none  backdrop-blur-[5px] flex items-center justify-center z-50 p-4">
+          <div className="fixed w-full h-full bg-black opacity-30"></div>
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl relative p-6">
+            <button
+              onClick={() => setOpenModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:cursor-pointer"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <ProductRegister
+              tenant={tenant}
+              onSuccess={() => {
+                setOpenModal(false);
+                fetchProducts();
+              }}
+            />
+          </div>
+        </div>
+      )}
+      {editingProduct && (
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="fixed w-full h-full bg-black opacity-30"></div>
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl relative p-6">
+            <button
+              onClick={() => setEditingProduct(null)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:cursor-pointer"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <ProductEdit
+              product={editingProduct}
+              tenant={tenant}
+              onSuccess={() => {
+                setEditingProduct(null);
+                fetchProducts();
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default ProductsPanel;
+export default ProductsManager;

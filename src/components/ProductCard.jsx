@@ -4,20 +4,22 @@ const ProductCard = ({ product, primaryColor }) => {
   const { addToCart } = useCart();
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full max-w-sm border border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full max-w-sm border dark:border-gray-700 border-gray-50">
       <img
         src={product.imageUrl || "https://via.placeholder.com/400x200"}
         alt={product.name}
         className="w-full h-48 object-cover"
       />
       <div className="p-5">
-        <h3 className="text-xl font-bold text-gray-800 mb-2">{product.name}</h3>
-        <p className="text-gray-600 text-sm h-10 overflow-hidden line-clamp-2">
+        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-50 mb-2">
+          {product.name}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-300 text-sm h-10 overflow-hidden line-clamp-2">
           {product.description}
         </p>
 
         <div className="flex justify-between items-center mt-6">
-          <span className="text-lg font-extrabold text-gray-900">
+          <span className="text-lg font-extrabold text-gray-900 dark:text-gray-50">
             {new Intl.NumberFormat("pt-BR", {
               style: "currency",
               currency: "BRL",

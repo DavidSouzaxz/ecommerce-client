@@ -1,4 +1,7 @@
-import React from "react";
+import { useState } from "react";
+import { useTheme } from "../context/AlterTheme";
+import { Sun, Moon } from "lucide-react";
+import PerfilClient from "./PerfilClient";
 
 const Navbar = ({
   tenant,
@@ -8,15 +11,18 @@ const Navbar = ({
   selectedCategory,
   setSelectedCategory,
 }) => {
+  const { theme, toggleTheme } = useTheme();
+  const [openModalPerfil, setOpenModalPerfil] = useState(false);
+
   return (
-    <nav className="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
+    <nav className="bg-white dark:bg-gray-900 sticky top-0 z-50 shadow-sm border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
       {/* Parte Superior: Logo e Busca */}
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo e Nome */}
         <div className="flex items-center gap-2 shrink-0">
           <img
             src={tenant?.logoUrl || "https://via.placeholder.com/40"}
-            className="h-10 w-10 rounded-full object-cover border border-gray-200"
+            className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
             alt="Logo"
           />
           {/* <span className="font-black text-lg hidden md:block text-gray-800 tracking-tighter">
@@ -29,7 +35,7 @@ const Navbar = ({
           <input
             type="text"
             placeholder="O que você deseja pedir?"
-            className="w-full bg-gray-100 border-none rounded-full py-2.5 px-11 focus:ring-2 focus:ring-opacity-50 transition-all outline-none text-sm"
+            className="w-full bg-gray-100 dark:bg-gray-800 dark:text-gray-100 border-none rounded-full py-2.5 px-11 focus:ring-2 focus:ring-opacity-50 transition-all outline-none text-sm placeholder-gray-500 dark:placeholder-gray-400"
             style={{ "--tw-ring-color": tenant?.primaryColor }}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -51,7 +57,10 @@ const Navbar = ({
 
         {/* Ícone de Perfil/Login */}
         <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+          <button
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-500 dark:text-gray-400 transition-colors"
+            onClick={() => setOpenModalPerfil(true)}
+          >
             <svg
               className="w-6 h-6"
               fill="none"
@@ -66,11 +75,16 @@ const Navbar = ({
               />
             </svg>
           </button>
+          <button
+            className="px-4 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors hover:cursor-pointer"
+            onClick={toggleTheme}
+          >
+            {theme === "light" ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
         </div>
       </div>
 
-      {/* Parte Inferior: Filtro de Categorias */}
-      <div className="bg-white border-t border-gray-50">
+      <div className="bg-white dark:bg-gray-900 border-t border-gray-50 dark:border-gray-800 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-4 py-3 flex gap-3 overflow-x-auto no-scrollbar scroll-smooth">
           {categories.map((cat) => (
             <button
@@ -79,7 +93,7 @@ const Navbar = ({
               className={`px-5 py-1.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all border hover:cursor-pointer ${
                 selectedCategory === cat
                   ? "text-white border-transparent shadow-md scale-105"
-                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+                  : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
               }`}
               style={
                 selectedCategory === cat
@@ -92,6 +106,21 @@ const Navbar = ({
           ))}
         </div>
       </div>
+
+      {openModalPerfil && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setOpenModalPerfil(false)}
+          ></div>
+          <div className="relative z-10 w-full max-w-md">
+            <PerfilClient
+              onClose={() => setOpenModalPerfil(false)}
+              tenant={tenant}
+            />
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

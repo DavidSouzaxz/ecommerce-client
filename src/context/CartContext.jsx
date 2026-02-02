@@ -3,9 +3,15 @@ import { createContext, useState, useContext, useEffect } from "react";
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCart = localStorage.getItem("cartItems");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-  // Adicionar item ao carrinho
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
   const addToCart = (product) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
@@ -24,14 +30,18 @@ export const CartProvider = ({ children }) => {
     (acc, item) => acc + item.price * item.quantity,
     0,
   );
-
   const clearCart = () => {
     setCartItems([]);
+    localStorage.removeItem("cartItems");
+  };
+
+  const removeFromCart = (productId) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== productId));
   };
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, cartTotal, clearCart }}
+      value={{ cartItems, addToCart, cartTotal, clearCart, removeFromCart }}
     >
       {children}
     </CartContext.Provider>

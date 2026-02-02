@@ -5,13 +5,15 @@ import { useCart } from "../context/CartContext";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 
 const StoreFront = () => {
   const { slug } = useParams(); // Pega o "lebvil-burger" da URL
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const { cartItems, cartTotal, clearCart, removeFromCart } = useCart();
+  const [activeHidden, setActiveHidden] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const navigate = useNavigate();
@@ -40,13 +42,17 @@ const StoreFront = () => {
     fetchTenant();
   }, [slug]);
 
+  const hiddenMenu = () => {
+    setActiveHidden(!activeHidden);
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         let url = `http://localhost:8080/api/products/tenant/${slug}`;
         if (selectedCategory !== "Todos") {
           // Endpoint: /tenant/{slug}/{category} (presumindo base /api/products)
-          url = `http://localhost:8080/api/products/tenant/${slug}/${encodeURIComponent(
+          url = `http://localhost:8080/api/products/tenant/${slug}/category/${encodeURIComponent(
             selectedCategory,
           )}`;
         }
@@ -113,7 +119,7 @@ const StoreFront = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen dark:bg-gray-900 bg-gray-50 pb-24">
       <Navbar
         tenant={tenant}
         searchTerm={searchTerm}
@@ -123,7 +129,7 @@ const StoreFront = () => {
         setSelectedCategory={setSelectedCategory}
       />
       <header
-        className="bg-white top-0 z-50 shadow-sm px-4 py-4"
+        className="bg-white dark:bg-gray-900 top-0 z-50 shadow-sm px-4 py-4"
         style={{ borderBottom: `4px solid ${tenant.primaryColor}` }}
       >
         <div className="max-w-6xl mx-auto flex items-center justify-center gap-4">
@@ -132,7 +138,7 @@ const StoreFront = () => {
             alt="Logo"
             className="h-12 w-12 rounded-full object-cover"
           />
-          <h1 className="text-2xl font-black text-gray-800 uppercase tracking-tight">
+          <h1 className="text-2xl font-black text-gray-800 dark:text-gray-50 uppercase tracking-tight">
             {tenant.name}
           </h1>
         </div>
@@ -169,22 +175,52 @@ const StoreFront = () => {
 
       {/* Barra do Carrinho Flutuante (Estilo App Mobile) */}
       {cartItems.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-white rounded-full shadow-2xl border border-gray-100 p-2 flex items-center justify-between z-50 animate-bounce-subtle">
-          <div className="pl-6">
-            <p className="text-xs text-gray-500 font-medium">
+        <div className="fixed bottom-6 right-6 w-[90%] max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 flex  flex-col z-50 animate-bounce-subtle p-6">
+          {!activeHidden && (
+            <div className="mb-4 max-h-60 overflow-y-auto border-b pb-2">
+              {cartItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex justify-between items-center text-xs text-gray-600 dark:text-gray-300 mt-2"
+                >
+                  <div className="flex items-center gap-2 truncate pr-2">
+                    <span className="font-bold whitespace-nowrap">
+                      {item.quantity}x
+                    </span>
+                    <span className="truncate">{item.name}</span>
+                  </div>
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="text-gray-400 hover:text-red-500 transition-colors p-1 cursor-pointer dark:hover:text-red-400"
+                    title="Remover Item"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <button
+            onClick={hiddenMenu}
+            className="text-xs font-bold text-gray-500 dark:text-gray-300 mb-2 self-end uppercase hover:text-gray-700 dark:hover:text-gray-400 underline hover:cursor-pointer"
+          >
+            {activeHidden ? "Detalhes" : "Ocultar"}
+          </button>
+          <div className="flex flex-col items-end">
+            <p className="text-xs text-gray-500 dark:text-gray-300 font-medium">
               {cartItems.length} {cartItems.length === 1 ? "item" : "itens"}
             </p>
-            <p className="text-lg font-bold text-gray-900">
+            <p className="text-lg font-bold text-gray-900 dark:text-gray-50">
               Total: R$ {cartTotal.toFixed(2)}
             </p>
+            <button
+              onClick={handleFinalize}
+              style={{ backgroundColor: tenant.primaryColor }}
+              className="text-white px-8 py-3 rounded-full font-bold hover:brightness-110 transition-all uppercase text-sm tracking-wider hover:cursor-pointer mt-2"
+            >
+              Fechar Pedido
+            </button>
           </div>
-          <button
-            onClick={handleFinalize}
-            style={{ backgroundColor: tenant.primaryColor }}
-            className="text-white px-8 py-3 rounded-full font-bold hover:brightness-110 transition-all uppercase text-sm tracking-wider hover:cursor-pointer"
-          >
-            Fechar Pedido
-          </button>
         </div>
       )}
     </div>

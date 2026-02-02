@@ -90,30 +90,31 @@ const Checkout = () => {
   if (!tenant) return <div className="p-10 text-center">Carregando...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-10">
-      {/* Header Simples */}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-10">
       <header
-        className="bg-white shadow-sm p-4 text-center sticky top-0 z-10"
+        className="bg-white dark:bg-gray-900 shadow-sm p-4 text-center sticky top-0 z-10"
         style={{ borderBottom: `4px solid ${tenant.primaryColor}` }}
       >
-        <h1 className="text-2xl font-extrabold uppercase tracking-wide text-gray-800">
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide text-gray-800 dark:text-gray-100">
           Finalizar Pedido
         </h1>
-        <p className="text-sm text-gray-500">em {tenant.name}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          em {tenant.name}
+        </p>
       </header>
 
       <div className="max-w-2xl mx-auto p-4 mt-6">
         <button
           onClick={() => navigate(-1)}
-          className="mb-5 hover:cursor-pointer hover:underline text-gray-600 flex  justify-centeritems-center gap-1"
+          className="mb-5 hover:cursor-pointer hover:underline text-gray-600 flex  justify-center items-center gap-1"
         >
           {" "}
           ← Voltar
         </button>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
           {/* Lista de Itens (Resumo) */}
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+            <h2 className="text-lg font-bold text-gray-700 dark:text-gray-100 mb-4">
               Resumo do Pedido
             </h2>
             <ul className="space-y-4">
@@ -123,11 +124,11 @@ const Checkout = () => {
                   className="flex justify-between items-center text-sm"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="font-bold text-gray-900">
+                    <span className="font-bold text-gray-900 dark:text-gray-100">
                       {item.quantity}x
                     </span>
                     <div className="flex flex-col">
-                      <span className="text-gray-800 font-medium">
+                      <span className="text-gray-800 font-medium dark:text-gray-200">
                         {item.name}
                       </span>
                       {/* <span className="text-xs text-gray-500">{item.description} (Opcional)</span> */}
@@ -139,8 +140,10 @@ const Checkout = () => {
                 </li>
               ))}
             </ul>
-            <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
-              <span className="font-bold text-gray-600">Total</span>
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-600 flex justify-between items-center">
+              <span className="font-bold text-gray-600 dark:text-gray-50">
+                Total
+              </span>
               <span
                 className="text-2xl font-black"
                 style={{ color: tenant.primaryColor }}
@@ -152,10 +155,12 @@ const Checkout = () => {
 
           {/* Formulário */}
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
-            <h2 className="text-lg font-bold text-gray-800">Seus Dados</h2>
+            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+              Seus Dados
+            </h2>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Nome Completo
               </label>
               <input
@@ -164,14 +169,14 @@ const Checkout = () => {
                 name="customerName"
                 value={formData.customerName}
                 onChange={handleChange}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:bg-white transition-all"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:bg-white transition-all text-gray-700 dark:text-gray-700"
                 style={{ "--tw-ring-color": tenant.primaryColor }}
                 placeholder="Ex: João da Silva"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Endereço de Entrega
               </label>
               <textarea
@@ -180,7 +185,7 @@ const Checkout = () => {
                 value={formData.customerAddress}
                 onChange={handleChange}
                 rows="3"
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:bg-white transition-all resize-none"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:bg-white transition-all resize-none dark:text-gray-700 text-gray-700"
                 style={{ "--tw-ring-color": tenant.primaryColor }}
                 placeholder="Rua, Número, Bairro, Complemento..."
               />
@@ -188,7 +193,7 @@ const Checkout = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Telefone / Whats
                 </label>
                 <input
@@ -196,20 +201,20 @@ const Checkout = () => {
                   name="customerPhone"
                   value={formData.customerPhone}
                   onChange={handleChange}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:bg-white transition-all"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:bg-white transition-all text-gray-700 dark:text-gray-700"
                   style={{ "--tw-ring-color": tenant.primaryColor }}
                   placeholder="(00) 00000-0000"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Pagamento
                 </label>
                 <select
                   name="paymentMethod"
                   value={formData.paymentMethod}
                   onChange={handleChange}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:bg-white transition-all"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:bg-white transition-all dark:text-gray-700"
                   style={{ "--tw-ring-color": tenant.primaryColor }}
                 >
                   <option value="pix">PIX</option>
@@ -222,7 +227,7 @@ const Checkout = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:brightness-110 transition-all mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:brightness-110 transition-all mt-4 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
               style={{ backgroundColor: tenant.primaryColor }}
             >
               {loading ? "Enviando Pedido..." : "CONFIRMAR PEDIDO"}
@@ -231,7 +236,7 @@ const Checkout = () => {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="w-full text-gray-500 font-semibold py-2 text-sm hover:underline"
+              className="w-full text-gray-500 font-semibold py-2 text-sm hover:underline cursor-pointer"
             >
               Voltar / Cancelar
             </button>

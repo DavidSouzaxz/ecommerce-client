@@ -5,18 +5,21 @@ Sistema web de vendas desenvolvido para oferecer uma experiência completa de lo
 ## 🚀 Funcionalidades
 
 ### Área do Cliente (StoreFront)
+
 - **Catálogo de Produtos:** Visualização dinâmica de produtos por loja (identificada via slug na URL).
 - **Carrinho de Compras:** Gerenciamento de itens selecionados para compra.
 - **Checkout:** Processo simplificado para finalização de pedidos.
 - **Perfil do Cliente:** Visualização e edição de informações do usuário.
 
 ### Painel Administrativo
+
 - **Proteção de Rotas:** Acesso restrito a usuários autenticados.
 - **Gestão de Produtos:** Listagem, cadastro e edição de produtos.
 - **Gestão de Pedidos:** Acompanhamento de pedidos recebidos.
 - **Configurações:** Ajustes gerais da loja e do sistema.
 
 ### Funcionalidades Gerais
+
 - **Tema Dinâmico:** Suporte a alteração de temas (Dark/Light mode).
 - **Responsividade:** Interface adaptável para dispositivos móveis e desktop.
 
@@ -53,18 +56,19 @@ src/
 ## 📦 Como Rodar o Projeto
 
 1. **Instale as dependências:**
+
    ```bash
    npm install
    ```
 
 2. **Inicie o servidor de desenvolvimento:**
+
    ```bash
    npm run dev
    ```
 
 3. **Acesse a aplicação:**
    O terminal exibirá a URL local (geralmente `http://localhost:5173`).
-
    - **Loja:** `http://localhost:5173/nome-da-loja`
    - **Login:** `http://localhost:5173/login`
    - **Admin:** `http://localhost:5173/admin/nome-da-loja`

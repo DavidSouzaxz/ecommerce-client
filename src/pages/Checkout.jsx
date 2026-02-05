@@ -54,15 +54,13 @@ const Checkout = () => {
 
     if (!tenant) return;
 
-    // Constrói o payload para o backend
-    // Nota: enviante customerPhone/paymentMethod na "descrição" do endereço ou criar campos no backend se existirem
-    // Vou concatenar no endereço para garantir que chegue, caso o backend seja simples.
-    const fullAddress = `${formData.customerAddress} | Tel: ${formData.customerPhone} | Pagamento: ${formData.paymentMethod}`;
-
     const payload = {
       customerName: formData.customerName,
-      customerAddress: fullAddress, // Adaptando para enviar tudo no endereço
+      customerAddress: formData.customerAddress,
+      customerPhone: formData.customerPhone, // Campo novo
+      paymentMethod: formData.paymentMethod, // Campo novo
       totalValue: cartTotal,
+      status: "PENDENTE",
       tenant: { id: tenant.id },
       items: cartItems.map((item) => ({
         quantity: item.quantity,
@@ -81,7 +79,7 @@ const Checkout = () => {
       navigate(`/${slug}`);
     } catch (err) {
       console.error(err);
-      alert("Erro ao processar pedido. Tente novamente.");
+      alert("Erro ao processar pedido.");
     } finally {
       setLoading(false);
     }

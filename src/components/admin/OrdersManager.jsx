@@ -89,62 +89,84 @@ const OrdersManager = ({ slug, tenant }) => {
       </div>
 
       {/* Tabela de Pedidos */}
-      <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
-        <table className="w-full text-left min-w-[600px]">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+        <table className="w-full text-left">
           <thead className="bg-gray-50 border-b">
             <tr>
-              <th className="p-4 font-semibold text-gray-600">ID</th>
-              <th className="p-4 font-semibold text-gray-600">Cliente</th>
-              <th className="p-4 font-semibold text-gray-600">Valor</th>
-              <th className="p-4 font-semibold text-gray-600">Status</th>
-              <th className="p-4 font-semibold text-gray-600 text-center">
-                Ações
+              <th className="p-4 font-bold text-gray-600 text-sm">PEDIDO</th>
+              <th className="p-4 font-bold text-gray-600 text-sm">
+                CLIENTE / WHATSAPP
+              </th>
+              <th className="p-4 font-bold text-gray-600 text-sm">
+                ENDEREÇO DE ENTREGA
+              </th>
+              <th className="p-4 font-bold text-gray-600 text-sm">
+                TOTAL / PGTO
+              </th>
+              <th className="p-4 font-bold text-gray-600 text-sm text-center">
+                AÇÕES
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-gray-100">
             {orders.map((order) => (
               <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                <td className="p-4 font-mono text-sm text-gray-400">
-                  #{order.id}
-                </td>
-                <td className="p-4 font-medium text-gray-800">
-                  {order.customerName}
-                </td>
-                <td className="p-4 font-bold text-gray-900">
-                  R$ {order.totalValue.toFixed(2)}
+                <td className="p-4">
+                  <span className="font-mono text-blue-600 font-bold">
+                    #{order.id}
+                  </span>
                 </td>
                 <td className="p-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      order.status === "PENDENTE"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : order.status === "EM PREPARO"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-green-100 text-green-700"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="font-bold text-gray-800">
+                      {order.customerName}
+                    </span>
+                    {/* Link direto para o WhatsApp do cliente */}
+                    <a
+                      href={`https://wa.me/55${order.customerPhone?.replace(/\D/g, "")}`}
+                      target="_blank"
+                      className="text-xs text-green-600 font-bold hover:underline flex items-center gap-1"
+                    >
+                      📱 {order.customerPhone}
+                    </a>
+                  </div>
+                </td>
+                <td className="p-4">
+                  <p className="text-sm text-gray-600 max-w-[250px] leading-tight italic">
+                    {order.customerAddress}
+                  </p>
+                </td>
+                <td className="p-4">
+                  <div className="flex flex-col">
+                    <span className="font-black text-gray-900">
+                      R$ {order.totalValue.toFixed(2)}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 bg-gray-100 rounded self-start mt-1">
+                      {order.paymentMethod}
+                    </span>
+                  </div>
                 </td>
                 <td className="p-4 flex justify-center gap-2">
                   {order.status === "PENDENTE" && (
                     <button
                       onClick={() => updateStatus(order.id, "EM PREPARO")}
-                      className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors hover:cursor-pointer"
+                      className="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-bold hover:cursor-pointer"
                     >
-                      {" "}
-                      Aceitar{" "}
+                      ACEITAR
                     </button>
                   )}
                   {order.status === "EM PREPARO" && (
                     <button
                       onClick={() => updateStatus(order.id, "FINALIZADO")}
-                      className="bg-green-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-green-700 transition-colors hover:cursor-pointer"
+                      className="bg-green-600 text-white text-xs px-4 py-2 rounded-lg font-bold hover:cursor-pointer"
                     >
-                      {" "}
-                      Finalizar{" "}
+                      FINALIZAR
                     </button>
+                  )}
+                  {order.status === "FINALIZADO" && (
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                      Concluído
+                    </span>
                   )}
                 </td>
               </tr>

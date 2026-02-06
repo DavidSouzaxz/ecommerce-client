@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 export const ProductRegister = ({ tenant, onSuccess }) => {
   const [newProduct, setNewProduct] = useState({
@@ -13,7 +13,7 @@ export const ProductRegister = ({ tenant, onSuccess }) => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/api/products", {
+      await api.post("http://localhost:8080/api/products", {
         ...newProduct,
         tenant: { id: tenant.id },
       });

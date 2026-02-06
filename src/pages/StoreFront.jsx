@@ -42,6 +42,18 @@ const StoreFront = () => {
     fetchTenant();
   }, [slug]);
 
+  useEffect(() => {
+    if (tenant) {
+      document.title = tenant.name; // O título na loja mostra apenas o nome da loja
+      const link =
+        document.querySelector("link[rel*='icon']") ||
+        document.createElement("link");
+      link.rel = "icon";
+      link.href = tenant.logoUrl;
+      document.getElementsByTagName("head")[0].appendChild(link);
+    }
+  }, [tenant]);
+
   const hiddenMenu = () => {
     setActiveHidden(!activeHidden);
   };
@@ -158,13 +170,15 @@ const StoreFront = () => {
       {/* Grid de Produtos */}
       <main className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              primaryColor={tenant.primaryColor}
-            />
-          ))}
+          {filteredProducts
+            .filter((p) => p.available === true)
+            .map((p) => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                primaryColor={tenant.primaryColor}
+              />
+            ))}
           {filteredProducts.length === 0 && (
             <div className="col-span-full text-center text-gray-500 py-10">
               Nenhum produto encontrado.

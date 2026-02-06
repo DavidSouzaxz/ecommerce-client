@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 import { ProductRegister } from "../ProductRegister";
 import { ProductEdit } from "../ProductEdit";
 
@@ -7,12 +7,11 @@ const ProductsManager = ({ slug, tenant }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
-
   const [editingProduct, setEditingProduct] = useState(null);
 
   const fetchProducts = async () => {
     try {
-      const productsRes = await axios.get(
+      const productsRes = await api.get(
         `http://localhost:8080/api/products/tenant/${slug}`,
       );
       setProducts(productsRes.data);
@@ -27,15 +26,35 @@ const ProductsManager = ({ slug, tenant }) => {
     fetchProducts();
   }, [slug]);
 
+  const toggleAvailability = async (product) => {
+    try {
+      await api.patch(`http://localhost:8080/api/products/${product.id}`, {
+        available: !product.available,
+      });
+      fetchProducts();
+    } catch (err) {
+      console.error("Erro ao mudar status do produto:", err);
+      alert("Erro ao atualizar a disponibilidade.");
+    }
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm("Tem certeza que deseja excluir este produto?")) {
       try {
-        await axios.delete(`http://localhost:8080/api/products/${id}`);
-        fetchProducts(); //
+        await api.delete(
+          `http://localhost:8080/api/products/tenant/${slug}/product/${id}`,
+        );
+        fetchProducts();
         alert("Produto excluído com sucesso!");
       } catch (err) {
-        console.error(err);
-        alert("Erro ao excluir o produto.");
+        if (err.response?.status === 409) {
+          alert(
+            "Não é possível excluir um produto que está associado a pedidos.",
+          );
+        } else {
+          console.error("Erro ao excluir produto:", err);
+          alert("Erro ao excluir o produto.");
+        }
       }
     }
   };
@@ -50,23 +69,21 @@ const ProductsManager = ({ slug, tenant }) => {
     );
   }
 
-  // Adjusted layout: removed min-h-screen and bg-gray-50 from outer wrapper to fit inside AdminPanel
-  // Kept internal structure
   return (
     <div>
       <div className="mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
               Gerenciar Estoque
             </h1>
-            <p className="text-gray-500 mt-1">
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
               Vendo produtos da loja:{" "}
               <span
                 className="font-semibold "
                 style={{ color: tenant.primaryColor }}
               >
-                {slug}
+                {tenant.name}
               </span>
             </p>
           </div>
@@ -94,31 +111,34 @@ const ProductsManager = ({ slug, tenant }) => {
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Produto
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Categoria
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">
+                    Disponível
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Preço
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Ações
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {products.length === 0 ? (
                   <tr>
                     <td
-                      colSpan="4"
-                      className="px-6 py-12 text-center text-gray-500"
+                      colSpan="5"
+                      className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
                     >
                       <div className="flex flex-col items-center justify-center gap-2">
                         <svg
@@ -147,13 +167,13 @@ const ProductsManager = ({ slug, tenant }) => {
                   products.map((product) => (
                     <tr
                       key={product.id}
-                      className="hover:bg-gray-50 transition-colors"
+                      className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${!product.available ? "opacity-60" : ""}`}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="h-12 w-12 flex-shrink-0">
                             <img
-                              className="h-12 w-12 rounded-lg object-cover bg-gray-100 border border-gray-200"
+                              className="h-12 w-12 rounded-lg object-cover bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
                               src={
                                 product.imageUrl ||
                                 "https://via.placeholder.com/150"
@@ -162,10 +182,10 @@ const ProductsManager = ({ slug, tenant }) => {
                             />
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-bold text-gray-900">
+                            <div className="text-sm font-bold text-gray-900 dark:text-white">
                               {product.name}
                             </div>
-                            <div className="text-sm text-gray-500 max-w-xs truncate">
+                            <div className="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
                               {product.description || "Sem descrição"}
                             </div>
                           </div>
@@ -179,19 +199,32 @@ const ProductsManager = ({ slug, tenant }) => {
                           {product.category || "Geral"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+
+                      <td className="px-6 py-4 whitespace-nowrap text-start">
+                        <button
+                          onClick={() => toggleAvailability(product)}
+                          className={`px-3 py-1 rounded-full text-[10px] font-black uppercase transition-all hover:cursor-pointer ${
+                            product.available
+                              ? "bg-green-100 text-green-700 hover:bg-green-200"
+                              : "bg-red-100 text-red-700 hover:bg-red-200"
+                          }`}
+                        >
+                          {product.available ? "Disponível" : "Indisponível"}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                         R$ {product.price?.toFixed(2)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
                           onClick={() => setEditingProduct(product)}
-                          className="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-md transition-colors mr-2 hover:cursor-pointer"
+                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 px-3 py-1.5 rounded-md transition-colors mr-2 hover:cursor-pointer"
                         >
                           Editar
                         </button>
                         <button
                           onClick={() => handleDelete(product.id)}
-                          className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md transition-colors hover:cursor-pointer"
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 px-3 py-1.5 rounded-md transition-colors hover:cursor-pointer"
                         >
                           Excluir
                         </button>
@@ -204,9 +237,10 @@ const ProductsManager = ({ slug, tenant }) => {
           </div>
         </div>
       </div>
-      {/* Modal de Cadastro */}
+
+      {/* Modais mantidos conforme original */}
       {openModal && (
-        <div className="fixed inset-0 bg-none  backdrop-blur-[5px] flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-none backdrop-blur-[5px] flex items-center justify-center z-50 p-4">
           <div className="fixed w-full h-full bg-black opacity-30"></div>
           <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl relative p-6">
             <button

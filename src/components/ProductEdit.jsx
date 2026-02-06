@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 export const ProductEdit = ({ product, tenant, onSuccess }) => {
   const [editedProduct, setEditedProduct] = useState({
@@ -25,10 +25,13 @@ export const ProductEdit = ({ product, tenant, onSuccess }) => {
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8080/api/products/${product.id}`, {
-        ...editedProduct,
-        tenant: { id: tenant.id },
-      });
+      await api.put(
+        `http://localhost:8080/api/products/tenant/${tenant.slug}/product/${product.id}`,
+        {
+          ...editedProduct,
+          tenant: { id: tenant.id },
+        },
+      );
       alert("Produto atualizado!");
       if (onSuccess) onSuccess();
     } catch (err) {

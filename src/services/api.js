@@ -1,4 +1,8 @@
-axios.interceptors.request.use((config) => {
+import axios from "axios";
+
+const api = axios.create();
+
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -6,4 +10,4 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-export default axios;
+export default api;

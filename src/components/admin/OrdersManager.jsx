@@ -1,20 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 const OrdersManager = ({ slug, tenant }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getAuthHeader = () => {
-    const token = localStorage.getItem("token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  };
-
   const fetchOrders = async () => {
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `http://localhost:8080/api/orders/tenant/${slug}`,
-        { headers: getAuthHeader() },
       );
       setOrders(response.data);
     } catch (err) {
@@ -32,13 +26,9 @@ const OrdersManager = ({ slug, tenant }) => {
 
   const updateStatus = async (id, status) => {
     try {
-      await axios.patch(
-        `http://localhost:8080/api/orders/${id}/status`,
-        status,
-        {
-          headers: { "Content-Type": "text/plain", ...getAuthHeader() },
-        },
-      );
+      await api.patch(`http://localhost:8080/api/orders/${id}/status`, status, {
+        headers: { "Content-Type": "text/plain" },
+      });
       fetchOrders();
     } catch (err) {
       alert("Erro ao atualizar status");
@@ -53,95 +43,112 @@ const OrdersManager = ({ slug, tenant }) => {
   return (
     <div>
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-2">
-        <h1 className="text-2xl font-black text-gray-800">Gestão de Pedidos</h1>
-        <div className="text-sm text-gray-500">
-          Loja: <span className="font-bold">{slug}</span>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+            Gestão de Pedidos
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            Pedidos da loja:{" "}
+            <span
+              className="font-semibold "
+              style={{ color: tenant.primaryColor }}
+            >
+              {tenant.name}
+            </span>
+          </p>
         </div>
       </header>
 
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div
-          className="bg-white p-6 rounded-xl shadow-sm border-l-4"
+          className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border-l-4 transition-colors"
           style={{ borderColor: tenant.primaryColor }}
         >
-          <p className="text-gray-500 text-sm font-medium uppercase">
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">
             Vendas Hoje
           </p>
-          <p className="text-2xl font-bold text-gray-800">
+          <p className="text-2xl font-bold text-gray-800 dark:text-white">
             R$ {totalFaturamento.toFixed(2)}
           </p>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-          <p className="text-gray-500 text-sm font-medium uppercase">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border-l-4 border-blue-500 transition-colors">
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">
             Total Pedidos
           </p>
-          <p className="text-2xl font-bold text-gray-800">{orders.length}</p>
+          <p className="text-2xl font-bold text-gray-800 dark:text-white">
+            {orders.length}
+          </p>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-yellow-500">
-          <p className="text-gray-500 text-sm font-medium uppercase">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border-l-4 border-yellow-500 transition-colors">
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">
             Aguardando
           </p>
-          <p className="text-2xl font-bold text-gray-800">
+          <p className="text-2xl font-bold text-gray-800 dark:text-white">
             {orders.filter((o) => o.status === "PENDENTE").length}
           </p>
         </div>
       </div>
 
       {/* Tabela de Pedidos */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700 transition-colors">
         <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-50 dark:bg-gray-700/50 border-b dark:border-gray-700">
             <tr>
-              <th className="p-4 font-bold text-gray-600 text-sm">PEDIDO</th>
-              <th className="p-4 font-bold text-gray-600 text-sm">
+              <th className="p-4 font-bold text-gray-600 dark:text-gray-300 text-sm">
+                PEDIDO
+              </th>
+              <th className="p-4 font-bold text-gray-600 dark:text-gray-300 text-sm">
                 CLIENTE / WHATSAPP
               </th>
-              <th className="p-4 font-bold text-gray-600 text-sm">
+              <th className="p-4 font-bold text-gray-600 dark:text-gray-300 text-sm">
                 ENDEREÇO DE ENTREGA
               </th>
-              <th className="p-4 font-bold text-gray-600 text-sm">
+              <th className="p-4 font-bold text-gray-600 dark:text-gray-300 text-sm">
                 TOTAL / PGTO
               </th>
-              <th className="p-4 font-bold text-gray-600 text-sm text-center">
+              <th className="p-4 font-bold text-gray-600 dark:text-gray-300 text-sm text-center">
                 AÇÕES
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {orders.map((order) => (
-              <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+              <tr
+                key={order.id}
+                className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
                 <td className="p-4">
-                  <span className="font-mono text-blue-600 font-bold">
+                  <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
                     #{order.id}
                   </span>
                 </td>
                 <td className="p-4">
                   <div className="flex flex-col">
-                    <span className="font-bold text-gray-800">
+                    <span className="font-bold text-gray-800 dark:text-white">
                       {order.customerName}
                     </span>
                     {/* Link direto para o WhatsApp do cliente */}
                     <a
                       href={`https://wa.me/55${order.customerPhone?.replace(/\D/g, "")}`}
                       target="_blank"
-                      className="text-xs text-green-600 font-bold hover:underline flex items-center gap-1"
+                      className="text-xs text-green-600 dark:text-green-400 font-bold hover:underline flex items-center gap-1"
                     >
                       📱 {order.customerPhone}
                     </a>
                   </div>
                 </td>
                 <td className="p-4">
-                  <p className="text-sm text-gray-600 max-w-[250px] leading-tight italic">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 max-w-[250px] leading-tight italic">
                     {order.customerAddress}
                   </p>
                 </td>
                 <td className="p-4">
                   <div className="flex flex-col">
-                    <span className="font-black text-gray-900">
+                    <span className="font-black text-gray-900 dark:text-white">
                       R$ {order.totalValue.toFixed(2)}
                     </span>
-                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 bg-gray-100 rounded self-start mt-1">
+                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded self-start mt-1 dark:text-gray-300">
                       {order.paymentMethod}
                     </span>
                   </div>

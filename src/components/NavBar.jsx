@@ -19,15 +19,21 @@ const Navbar = ({
       {/* Parte Superior: Logo e Busca */}
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo e Nome */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center shrink-0">
           <img
             src={tenant?.logoUrl || "https://via.placeholder.com/40"}
             className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
             alt="Logo"
           />
-          {/* <span className="font-black text-lg hidden md:block text-gray-800 tracking-tighter">
-            {tenant?.name}
-          </span> */}
+          {tenant.open ? (
+            <div className=" text-green-700 p-4 rounded-lg text-center font-bold text-sm">
+              Aberto
+            </div>
+          ) : (
+            <div className=" text-red-700 p-4 rounded-lg text-center font-bold text-sm">
+              Fechado
+            </div>
+          )}
         </div>
 
         {/* Barra de Pesquisa */}

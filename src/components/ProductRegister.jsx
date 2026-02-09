@@ -13,7 +13,7 @@ export const ProductRegister = ({ tenant, onSuccess }) => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
-      await api.post("http://localhost:8080/api/products", {
+      await api.post("/api/products", {
         ...newProduct,
         tenant: { id: tenant.id },
       });

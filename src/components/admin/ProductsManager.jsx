@@ -11,9 +11,7 @@ const ProductsManager = ({ slug, tenant }) => {
 
   const fetchProducts = async () => {
     try {
-      const productsRes = await api.get(
-        `http://localhost:8080/api/products/tenant/${slug}`,
-      );
+      const productsRes = await api.get(`/api/products/tenant/${slug}`);
       setProducts(productsRes.data);
     } catch (err) {
       console.error("Erro ao carregar dados:", err);
@@ -28,7 +26,7 @@ const ProductsManager = ({ slug, tenant }) => {
 
   const toggleAvailability = async (product) => {
     try {
-      await api.patch(`http://localhost:8080/api/products/${product.id}`, {
+      await api.patch(`/api/products/${product.id}`, {
         available: !product.available,
       });
       fetchProducts();
@@ -41,9 +39,7 @@ const ProductsManager = ({ slug, tenant }) => {
   const handleDelete = async (id) => {
     if (window.confirm("Tem certeza que deseja excluir este produto?")) {
       try {
-        await api.delete(
-          `http://localhost:8080/api/products/tenant/${slug}/product/${id}`,
-        );
+        await api.delete(`/api/products/tenant/${slug}/product/${id}`);
         fetchProducts();
         alert("Produto excluído com sucesso!");
       } catch (err) {

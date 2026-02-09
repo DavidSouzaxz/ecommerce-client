@@ -3,9 +3,11 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "../context/AlterTheme";
+import api from "../services/api";
 import OrdersManager from "../components/admin/OrdersManager";
 import ProductsManager from "../components/admin/ProductsManager";
 import SettingsManager from "../components/admin/SettingsManager";
+import SalesChart from "../components/SalesChart";
 
 const AdminPanel = () => {
   const { slug } = useParams();
@@ -14,13 +16,23 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("orders");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [chartData, setChartData] = useState([]);
+
+  const fetchMetrics = async () => {
+    try {
+      const res = await api.get(`/api/orders/tenant/${slug}/metrics`);
+      setChartData(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Erro ao buscar métricas:", error);
+      setChartData([]);
+    }
+  };
 
   const fetchTenant = async () => {
     try {
-      const tenantRes = await axios.get(
-        `http://localhost:8080/api/tenants/${slug}`,
-      );
+      const tenantRes = await api.get(`/api/tenants/${slug}`);
       setTenant(tenantRes.data);
+      console.log("Dados do tenant:", tenantRes.data);
     } catch (err) {
       console.error("Erro ao carregar dados do admin", err);
     } finally {
@@ -28,7 +40,17 @@ const AdminPanel = () => {
     }
   };
 
+  const toggleStoreStatus = async () => {
+    try {
+      await api.patch(`/api/tenants/${tenant.slug}/status`);
+      setTenant({ ...tenant, open: !tenant.open });
+    } catch (error) {
+      console.error("Erro ao alterar status da loja");
+    }
+  };
+
   useEffect(() => {
+    fetchMetrics();
     fetchTenant();
   }, [slug]);
 
@@ -36,10 +58,12 @@ const AdminPanel = () => {
     if (tenant) {
       document.title = `Admin - ${tenant.name}`; // Atualiza o título da aba
       // Atualiza o favicon
-      const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-      link.rel = 'icon';
+      const link =
+        document.querySelector("link[rel*='icon']") ||
+        document.createElement("link");
+      link.rel = "icon";
       link.href = tenant.logoUrl;
-      document.getElementsByTagName('head')[0].appendChild(link);
+      document.getElementsByTagName("head")[0].appendChild(link);
     }
   }, [tenant]);
 
@@ -59,6 +83,8 @@ const AdminPanel = () => {
         return <ProductsManager slug={slug} tenant={tenant} />;
       case "settings":
         return <SettingsManager tenant={tenant} />;
+      case "recharts":
+        return <SalesChart data={chartData} color={tenant.primaryColor} />;
       default:
         return <OrdersManager slug={slug} tenant={tenant} />;
     }
@@ -87,7 +113,7 @@ const AdminPanel = () => {
             {tenant.name}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex  items-center gap-2">
           <button
             onClick={toggleTheme}
             className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
@@ -119,7 +145,6 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      {/* Sidebar Simples (Desktop fixa, Mobile overlay) */}
       <aside
         className={`
           fixed md:sticky md:top-0 top-[64px] left-0 h-[calc(100vh-64px)] md:h-screen 
@@ -164,11 +189,31 @@ const AdminPanel = () => {
           >
             Configurações
           </button>
+          <button
+            onClick={() => {
+              setActiveTab("recharts");
+              setIsSidebarOpen(false);
+            }}
+            className={getTabClass("recharts")}
+            style={getTabStyle("recharts")}
+          >
+            Gráficos
+          </button>
 
-          <div className="mt-auto pt-4 border-t dark:border-gray-700">
+          <div className="mt-auto flex flex-col justify-center gap-5  pt-4 border-t dark:border-gray-700">
+            <button
+              onClick={toggleStoreStatus}
+              className={`px-4 py-2 rounded-full font-bold cursor-pointer text-xs transition-colors ${
+                tenant.open
+                  ? "bg-green-500/20 text-green-500"
+                  : "bg-red-500/20 text-red-500"
+              }`}
+            >
+              {tenant.open ? "● LOJA ABERTA" : "● LOJA FECHADA"}
+            </button>
             <button
               onClick={toggleTheme}
-              className="flex items-center gap-2 p-3 w-full rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-2 p-3 w-full cursor-pointer rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               {theme === "light" ? <Sun size={20} /> : <Moon size={20} />}
               <span>{theme === "light" ? "Modo Escuro" : "Modo Claro"}</span>
@@ -185,7 +230,7 @@ const AdminPanel = () => {
       {/* Overlay para fechar menu no mobile */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0  bg-opacity-50 z-0 md:hidden top-[64px]"
+          className="fixed inset-0  bg-opacity-50 z-0 md:hidden "
           onClick={() => setIsSidebarOpen(false)}
         />
       )}

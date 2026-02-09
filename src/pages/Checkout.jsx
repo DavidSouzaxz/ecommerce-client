@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import axios from "axios";
+import api from "../services/api";
 
 const Checkout = () => {
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -32,9 +32,7 @@ const Checkout = () => {
 
     const fetchTenant = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:8080/api/tenants/${slug}`,
-        );
+        const res = await api.get(`/api/tenants/${slug}`);
         setTenant(res.data);
       } catch (err) {
         console.error("Erro ao carregar loja", err);
@@ -70,10 +68,7 @@ const Checkout = () => {
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/orders",
-        payload,
-      );
+      const response = await api.post("/api/orders", payload);
       alert(`Pedido #${response.data.id} realizado com sucesso!`);
       clearCart();
       navigate(`/${slug}`);

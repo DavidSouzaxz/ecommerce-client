@@ -7,9 +7,7 @@ const OrdersManager = ({ slug, tenant }) => {
 
   const fetchOrders = async () => {
     try {
-      const response = await api.get(
-        `http://localhost:8080/api/orders/tenant/${slug}`,
-      );
+      const response = await api.get(`/api/orders/tenant/${slug}`);
       setOrders(response.data);
     } catch (err) {
       console.error("Erro ao carregar pedidos", err);
@@ -26,7 +24,7 @@ const OrdersManager = ({ slug, tenant }) => {
 
   const updateStatus = async (id, status) => {
     try {
-      await api.patch(`http://localhost:8080/api/orders/${id}/status`, status, {
+      await api.patch(`/api/orders/${id}/status`, status, {
         headers: { "Content-Type": "text/plain" },
       });
       fetchOrders();

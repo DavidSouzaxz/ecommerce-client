@@ -6,6 +6,7 @@ import ProductCard from "../components/ProductCard";
 import Navbar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
+import api from "../services/api";
 
 const StoreFront = () => {
   const { slug } = useParams(); // Pega o "lebvil-burger" da URL
@@ -28,9 +29,7 @@ const StoreFront = () => {
   useEffect(() => {
     const fetchTenant = async () => {
       try {
-        const tenantRes = await axios.get(
-          `http://localhost:8080/api/tenants/${slug}`,
-        );
+        const tenantRes = await api.get(`/api/tenants/${slug}`);
         setTenant(tenantRes.data);
       } catch (err) {
         console.error("Erro ao carregar loja", err);
@@ -44,7 +43,7 @@ const StoreFront = () => {
 
   useEffect(() => {
     if (tenant) {
-      document.title = tenant.name; // O título na loja mostra apenas o nome da loja
+      document.title = tenant.name;
       const link =
         document.querySelector("link[rel*='icon']") ||
         document.createElement("link");
@@ -61,15 +60,15 @@ const StoreFront = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        let url = `http://localhost:8080/api/products/tenant/${slug}`;
+        let url = `/api/products/tenant/${slug}`;
         if (selectedCategory !== "Todos") {
           // Endpoint: /tenant/{slug}/{category} (presumindo base /api/products)
-          url = `http://localhost:8080/api/products/tenant/${slug}/category/${encodeURIComponent(
+          url = `/api/products/tenant/${slug}/category/${encodeURIComponent(
             selectedCategory,
           )}`;
         }
 
-        const productsRes = await axios.get(url);
+        const productsRes = await api.get(url);
         setProducts(productsRes.data);
       } catch (err) {
         console.error("Erro ao carregar produtos", err);
@@ -100,12 +99,12 @@ const StoreFront = () => {
     //   const response = await axios.post(
     //     "http://localhost:8080/api/orders",
     //     orderData,
-    //   );
-    //   alert(`Pedido #${response.data.id} enviado com sucesso!`);
-    //   clearCart(); // Função que você pode criar no Context para zerar o carrinho
+    //   )
+    //   alert(`Pedido #${response.data.id} enviado com sucesso!`)
+    //   clearCart() // Função que você pode criar no Context para zerar o carrinho
     // } catch (err) {
-    //   console.error(err);
-    //   alert("Erro ao enviar o pedido para o servidor.");
+    //   console.error(err)
+    //   alert("Erro ao enviar o pedido para o servidor.")
     // }
   };
 
@@ -144,7 +143,7 @@ const StoreFront = () => {
         className="bg-white dark:bg-gray-900 top-0 z-50 shadow-sm px-4 py-4"
         style={{ borderBottom: `4px solid ${tenant.primaryColor}` }}
       >
-        <div className="max-w-6xl mx-auto flex items-center justify-center gap-4">
+        <div className="max-w-6xl mx-auto flex-col flex items-center justify-center gap-4">
           <img
             src={tenant.logoUrl}
             alt="Logo"
@@ -227,13 +226,19 @@ const StoreFront = () => {
             <p className="text-lg font-bold text-gray-900 dark:text-gray-50">
               Total: R$ {cartTotal.toFixed(2)}
             </p>
-            <button
-              onClick={handleFinalize}
-              style={{ backgroundColor: tenant.primaryColor }}
-              className="text-white px-8 py-3 rounded-full font-bold hover:brightness-110 transition-all uppercase text-sm tracking-wider hover:cursor-pointer mt-2"
-            >
-              Fechar Pedido
-            </button>
+            {tenant.open ? (
+              <button
+                onClick={handleFinalize}
+                style={{ backgroundColor: tenant.primaryColor }}
+                className="text-white px-8 py-3 rounded-full font-bold hover:brightness-110 transition-all uppercase text-sm tracking-wider hover:cursor-pointer mt-2"
+              >
+                Fechar Pedido
+              </button>
+            ) : (
+              <div className=" text-red-700 rounded-lg text-center font-bold">
+                Desculpe, estamos fechados no momento!
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import api from "../services/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,10 +11,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/login",
-        { email, password },
-      );
+      const response = await api.post("/api/auth/login", { email, password });
 
       // Salva o token e o slug do tenant para redirecionar corretamente
       localStorage.setItem("token", response.data.token);

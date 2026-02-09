@@ -26,7 +26,7 @@ export const ProductEdit = ({ product, tenant, onSuccess }) => {
     e.preventDefault();
     try {
       await api.put(
-        `http://localhost:8080/api/products/tenant/${tenant.slug}/product/${product.id}`,
+        `/api/products/tenant/${tenant.slug}/product/${product.id}`,
         {
           ...editedProduct,
           tenant: { id: tenant.id },

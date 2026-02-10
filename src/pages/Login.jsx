@@ -25,24 +25,26 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 dark:bg-gray-900">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 dark:bg-gray-800">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-black text-gray-800">Painel Admin</h2>
-          <p className="text-gray-500 mt-2">
+          <h2 className="text-3xl font-black text-gray-800 dark:text-white">
+            Painel Admin
+          </h2>
+          <p className="text-gray-500 mt-2 dark:text-gray-400">
             Entre com suas credenciais para gerenciar sua loja
           </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
               E-mail
             </label>
             <input
               type="email"
               required
-              className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
               placeholder="exemplo@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -50,13 +52,13 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
               Senha
             </label>
             <input
               type="password"
               required
-              className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -65,7 +67,7 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full bg-gray-900 text-white font-bold py-3 rounded-lg hover:bg-gray-800 active:scale-95 transition-all shadow-lg"
+            className="w-full bg-gray-900 text-white font-bold py-3 rounded-lg hover:bg-gray-800 active:scale-95 transition-all shadow-lg cursor-pointer"
           >
             Entrar no Painel
           </button>

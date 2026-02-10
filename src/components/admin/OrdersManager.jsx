@@ -1,26 +1,83 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import api from "../../services/api";
+
+// Função de fallback para apito simples caso o arquivo falhe
+const beepFallback = () => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "sine";
+    osc.frequency.value = 880; // A5
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  } catch (e) {
+    console.error("Fallback audio error", e);
+  }
+};
 
 const OrdersManager = ({ slug, tenant }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [lastPendingCount, setLastPendingCount] = useState(0);
+  const audioRef = useRef(new Audio("/notification.mp3"));
 
-  const fetchOrders = async () => {
+  const enableAudio = () => {
+    const audio = audioRef.current;
+    audio
+      .play()
+      .then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        setAudioEnabled(true);
+        console.log("Áudio desbloqueado com sucesso!");
+      })
+      .catch((err) => {
+        console.error("O navegador ainda bloqueou o áudio:", err);
+      });
+  };
+
+  const fetchOrders = useCallback(async () => {
     try {
       const response = await api.get(`/api/orders/tenant/${slug}`);
-      setOrders(response.data);
+      const currentOrders = response.data;
+      const pendingOrders = currentOrders.filter(
+        (o) => o.status === "PENDENTE",
+      );
+
+      // LOGICA DE DISPARO
+      if (pendingOrders.length > lastPendingCount && audioEnabled) {
+        console.log("Novo pedido! Tentando tocar som...");
+        const audio = audioRef.current;
+        audio.currentTime = 0;
+        
+        // Tenta tocar o MP3, se der erro (NotSupportedError), usa o beep
+        audio.play().catch((e) => {
+          console.warn("Erro ao tocar arquivo de áudio. Usando fallback:", e);
+          beepFallback();
+        });
+      }
+
+      setOrders(currentOrders);
+      setLastPendingCount(pendingOrders.length);
     } catch (err) {
       console.error("Erro ao carregar pedidos", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug, audioEnabled, lastPendingCount]);
 
   useEffect(() => {
     fetchOrders();
     const interval = setInterval(fetchOrders, 10000);
     return () => clearInterval(interval);
-  }, [slug]);
+  }, [fetchOrders]);
 
   const updateStatus = async (id, status) => {
     try {
@@ -55,6 +112,19 @@ const OrdersManager = ({ slug, tenant }) => {
             </span>
           </p>
         </div>
+        {!audioEnabled && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4 flex justify-between items-center">
+            <p className="text-yellow-700 text-sm font-bold">
+              ⚠️ O alerta sonoro de novos pedidos está desativado.
+            </p>
+            <button
+              onClick={enableAudio}
+              className="bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold hover:bg-yellow-600"
+            >
+              ATIVAR SOM
+            </button>
+          </div>
+        )}
       </header>
 
       {/* Cards de Resumo */}

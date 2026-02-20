@@ -13,14 +13,35 @@ const Login = () => {
     try {
       const response = await api.post("/api/auth/login", { email, password });
 
-      // Salva o token e o slug do tenant para redirecionar corretamente
       localStorage.setItem("token", response.data.token);
-      const userTenantSlug = response.data.tenantSlug;
+      localStorage.setItem("id", response.data.id);
 
       alert("Login realizado com sucesso!");
-      navigate(`/admin/${userTenantSlug}`);
+      isPresentStore(response.data.token, response.data.tenantSlug);
     } catch (err) {
       alert("Email ou senha inválidos.");
+    }
+  };
+
+  const isPresentStore = async (token, slug) => {
+    try {
+      if (!slug) {
+        alert(
+          "Nenhuma loja associada a este usuário. Por favor, registre sua loja.",
+        );
+        window.location.href = "/register-store";
+        return null;
+      }
+      const response = await api.get(`/api/tenants/${slug}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      window.location.href = `/admin/${response.data.slug}`;
+      return response.data;
+    } catch (err) {
+      console.error("Erro ao verificar loja:", err);
+      return null;
     }
   };
 

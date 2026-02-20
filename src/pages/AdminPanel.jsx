@@ -4,9 +4,9 @@ import axios from "axios";
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "../context/AlterTheme";
 import api from "../services/api";
-import OrdersManager from "../components/admin/OrdersManager";
-import ProductsManager from "../components/admin/ProductsManager";
-import SettingsManager from "../components/admin/SettingsManager";
+import OrdersManager from "../pages/admin/OrdersManager";
+import ProductsManager from "../pages/admin/ProductsManager";
+import SettingsManager from "../pages/admin/SettingsManager";
 import SalesChart from "../components/SalesChart";
 
 const AdminPanel = () => {
@@ -34,6 +34,9 @@ const AdminPanel = () => {
       setTenant(tenantRes.data);
       console.log("Dados do tenant:", tenantRes.data);
     } catch (err) {
+      if (err.response && err.response.status === 403) {
+        window.location.href = "/register-store";
+      }
       console.error("Erro ao carregar dados do admin", err);
     } finally {
       setLoading(false);
@@ -104,8 +107,7 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col md:flex-row transition-colors duration-300">
-      {/* Mobile Header */}
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col md:flex-row transition-colors duration-300 overflow-hidden">
       <div className="md:hidden bg-white dark:bg-gray-800 h-16 px-4 shadow-sm flex items-center justify-between sticky top-0 z-20 transition-colors duration-300">
         <div className="flex items-center gap-2">
           <img src={tenant.logoUrl} className="w-8 h-8 rounded" alt="logo" />
@@ -147,7 +149,7 @@ const AdminPanel = () => {
 
       <aside
         className={`
-          fixed md:sticky md:top-0 top-[64px] left-0 h-[calc(100vh-64px)] md:h-screen 
+          fixed md:sticky md:top-0 left-0  h-screen 
           w-64 bg-white dark:bg-gray-800 shadow-md z-10 transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
@@ -200,7 +202,7 @@ const AdminPanel = () => {
             Gráficos
           </button>
 
-          <div className="mt-auto flex flex-col justify-center gap-5  pt-4 border-t dark:border-gray-700">
+          <div className="mt-auto flex flex-col justify-center gap-5 pt-4 border-t dark:border-gray-700">
             <button
               onClick={toggleStoreStatus}
               className={`px-4 py-2 rounded-full font-bold cursor-pointer text-xs transition-colors ${
@@ -222,7 +224,6 @@ const AdminPanel = () => {
         </nav>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
         {renderContent()}
       </main>

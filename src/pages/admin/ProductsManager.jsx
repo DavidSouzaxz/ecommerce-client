@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
-import { ProductRegister } from "../ProductRegister";
-import { ProductEdit } from "../ProductEdit";
+import { ProductRegister } from "../../components/ProductRegister";
+import { ProductEdit } from "../../components/ProductEdit";
 
 const ProductsManager = ({ slug, tenant }) => {
   const [products, setProducts] = useState([]);
@@ -234,11 +234,10 @@ const ProductsManager = ({ slug, tenant }) => {
         </div>
       </div>
 
-      {/* Modais mantidos conforme original */}
       {openModal && (
         <div className="fixed inset-0 bg-none backdrop-blur-[5px] flex items-center justify-center z-50 p-4">
           <div className="fixed w-full h-full bg-black opacity-30"></div>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl relative p-6">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl relative p-6 dark:bg-gray-800">
             <button
               onClick={() => setOpenModal(false)}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:cursor-pointer"
@@ -270,7 +269,7 @@ const ProductsManager = ({ slug, tenant }) => {
       {editingProduct && (
         <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="fixed w-full h-full bg-black opacity-30"></div>
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl relative p-6">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl relative p-6 dark:bg-gray-800">
             <button
               onClick={() => setEditingProduct(null)}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:cursor-pointer"

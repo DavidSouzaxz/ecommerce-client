@@ -32,8 +32,10 @@ export const ProductRegister = ({ tenant, onSuccess }) => {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4 text-gray-800">Novo Produto</h2>
+    <div className="dark:bg-gray-800 bg-gray-50">
+      <h2 className="text-xl  font-bold mb-4 text-gray-800 dark:text-gray-100">
+        Novo Produto
+      </h2>
       <form
         onSubmit={handleAddProduct}
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -41,7 +43,7 @@ export const ProductRegister = ({ tenant, onSuccess }) => {
         <input
           type="text"
           placeholder="Nome do Produto"
-          className="border p-2 rounded"
+          className="border p-2 bg-gray-50 border-gray-200 text-gray-800 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           value={newProduct.name}
           onChange={(e) =>
             setNewProduct({ ...newProduct, name: e.target.value })
@@ -50,7 +52,7 @@ export const ProductRegister = ({ tenant, onSuccess }) => {
         <input
           type="number"
           placeholder="Preço"
-          className="border p-2 rounded"
+          className="border p-2 bg-gray-50 border-gray-200 text-gray-800 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           value={newProduct.price}
           onChange={(e) =>
             setNewProduct({ ...newProduct, price: e.target.value })
@@ -59,7 +61,7 @@ export const ProductRegister = ({ tenant, onSuccess }) => {
         <input
           type="text"
           placeholder="Categoria (ex: Bebidas)"
-          className="border p-2 rounded"
+          className="border p-2 bg-gray-50 border-gray-200 text-gray-800 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           value={newProduct.category}
           onChange={(e) =>
             setNewProduct({ ...newProduct, category: e.target.value })
@@ -68,7 +70,7 @@ export const ProductRegister = ({ tenant, onSuccess }) => {
         <input
           type="text"
           placeholder="URL da Imagem"
-          className="border p-2 rounded"
+          className="border p-2 bg-gray-50 border-gray-200 text-gray-800 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           value={newProduct.imageUrl}
           onChange={(e) =>
             setNewProduct({ ...newProduct, imageUrl: e.target.value })
@@ -76,7 +78,7 @@ export const ProductRegister = ({ tenant, onSuccess }) => {
         />
         <textarea
           placeholder="Descrição"
-          className="border p-2 rounded md:col-span-2"
+          className="border p-2 rounded bg-gray-50 md:col-span-2 border-gray-200 text-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           value={newProduct.description}
           onChange={(e) =>
             setNewProduct({ ...newProduct, description: e.target.value })

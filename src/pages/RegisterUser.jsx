@@ -9,29 +9,27 @@ const RegisterUser = () => {
     role: "ADMIN",
     password: "",
   });
-  const [passwordShow, setPasswordShow] = useState("");
-  const [validacoes, setValidacoes] = useState({
-    tamanho: true,
-    letraMaiuscula: true,
-    numero: true,
-    caracterEspecial: true,
+
+  const [validations, setValidations] = useState({
+    length: true,
+    letterUpperCase: true,
+    number: true,
+    SpecialCharacter: true,
   });
 
   const handlePasswordChange = (e) => {
-    const novaSenha = e.target.value;
+    const newPassword = e.target.value;
 
-    setPasswordShow(novaSenha);
+    const lengthMin = newPassword.length >= 8;
+    const letterUpperCase = /[A-Z]/.test(newPassword);
+    const number = /[0-9]/.test(newPassword);
+    const SpecialCharacter = /[!@#$%^&*(),.?":{}|<>]/.test(newPassword);
 
-    const tamanhoMinimo = novaSenha.length >= 8;
-    const temLetraMaiuscula = /[A-Z]/.test(novaSenha);
-    const temNumero = /[0-9]/.test(novaSenha);
-    const temCaracterEspecial = /[!@#$%^&*(),.?":{}|<>]/.test(novaSenha);
-
-    setValidacoes({
-      tamanho: tamanhoMinimo,
-      letraMaiuscula: temLetraMaiuscula,
-      numero: temNumero,
-      caracterEspecial: temCaracterEspecial,
+    setValidations({
+      length: lengthMin,
+      letterUpperCase: letterUpperCase,
+      number: number,
+      SpecialCharacter: SpecialCharacter,
     });
   };
 
@@ -103,19 +101,24 @@ const RegisterUser = () => {
             required
           />
           <div>
-            {!validacoes.letraMaiuscula && (
+            {!validations.letterUpperCase && (
               <p className="text-red-500 text-sm">
                 Senha deve conter letras maiusculas
               </p>
             )}
-            {!validacoes.tamanho && (
+            {!validations.length && (
               <p className="text-red-500 text-sm">
                 Senha deve conter no minímo 8 caracteres
               </p>
             )}
-            {!validacoes.caracterEspecial && (
+            {!validations.SpecialCharacter && (
               <p className="text-red-500 text-sm">
                 Senha deve conter pelo menos um "!@#$%^&*(),.?":{}|"
+              </p>
+            )}
+            {!validations.number && (
+              <p className="text-red-500 text-sm">
+                Senha deve conter pelo menos um número
               </p>
             )}
           </div>

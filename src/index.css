@@ -17,3 +17,16 @@
     scrollbar-width: none;
   }
 }
+
+@keyframes flutuar {
+  from {
+    transform: translateY(5px);
+  }
+  to {
+    transform: translateY(-5px);
+  }
+}
+
+.levit {
+  animation: flutuar 1s ease-in-out infinite alternate;
+}

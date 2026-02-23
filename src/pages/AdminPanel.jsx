@@ -1,22 +1,30 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Sun, Moon } from "lucide-react";
+import { LogOut, Moon, Sun } from "lucide-react";
 import { useTheme } from "../context/AlterTheme";
 import api from "../services/api";
 import OrdersManager from "../pages/admin/OrdersManager";
 import ProductsManager from "../pages/admin/ProductsManager";
 import SettingsManager from "../pages/admin/SettingsManager";
 import SalesChart from "../components/SalesChart";
+import { Link, useNavigate } from "react-router-dom";
 
 const AdminPanel = () => {
   const { slug } = useParams();
   const { theme, toggleTheme } = useTheme();
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("orders");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [chartData, setChartData] = useState([]);
+
+  const exit = async () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("id");
+    navigate(`/${slug}`);
+  };
 
   const fetchMetrics = async () => {
     try {
@@ -59,8 +67,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     if (tenant) {
-      document.title = `Admin - ${tenant.name}`; // Atualiza o título da aba
-      // Atualiza o favicon
+      document.title = `Admin - ${tenant.name}`; //
       const link =
         document.querySelector("link[rel*='icon']") ||
         document.createElement("link");
@@ -154,12 +161,14 @@ const AdminPanel = () => {
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
-        <div className="p-6 border-b dark:border-gray-700 hidden md:flex items-center gap-3">
-          <img src={tenant.logoUrl} className="w-8 h-8 rounded" alt="logo" />
-          <span className="font-bold text-gray-800 dark:text-white">
-            Admin {tenant.name}
-          </span>
-        </div>
+        <Link to={`/${slug}`}>
+          <div className="p-6 border-b dark:border-gray-700 hidden md:flex items-center gap-3">
+            <img src={tenant.logoUrl} className="w-8 h-8 rounded" alt="logo" />
+            <span className="font-bold text-gray-800 dark:text-white">
+              Admin {tenant.name}
+            </span>
+          </div>
+        </Link>
         <nav className="p-4 space-y-2 flex flex-col h-[calc(100%-80px)]">
           <button
             onClick={() => {
@@ -202,7 +211,7 @@ const AdminPanel = () => {
             Gráficos
           </button>
 
-          <div className="mt-auto flex flex-col justify-center gap-5 pt-4 border-t dark:border-gray-700">
+          <div className="mt-auto flex flex-col justify-center gap-5 pt-4 border-t dark:border-gray-700 p-4">
             <button
               onClick={toggleStoreStatus}
               className={`px-4 py-2 rounded-full font-bold cursor-pointer text-xs transition-colors ${
@@ -215,10 +224,17 @@ const AdminPanel = () => {
             </button>
             <button
               onClick={toggleTheme}
-              className="flex items-center gap-2 p-3 w-full cursor-pointer rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-2 p-3 w-full cursor-pointer rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               {theme === "light" ? <Sun size={20} /> : <Moon size={20} />}
               <span>{theme === "light" ? "Modo Escuro" : "Modo Claro"}</span>
+            </button>
+            <button
+              onClick={exit}
+              className="flex items-center gap-2 p-3 w-full cursor-pointer rounded-lg text-gray-600 dark:text-gray-400 hover:text-red-500 hover:bg-gray-200 dark:hover:bg-gray-700  transition-colors"
+            >
+              <LogOut />
+              <span>Sair</span>
             </button>
           </div>
         </nav>

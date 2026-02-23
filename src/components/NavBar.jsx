@@ -65,7 +65,13 @@ const Navbar = ({
         <div className="flex items-center gap-2">
           <button
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-500 dark:text-gray-400 transition-colors"
-            onClick={() => setOpenModalPerfil(true)}
+            onClick={() => {
+              if (localStorage.getItem("token")) {
+                window.location.href = `admin/${tenant.slug}`;
+              } else {
+                setOpenModalPerfil(true);
+              }
+            }}
           >
             <svg
               className="w-6 h-6"

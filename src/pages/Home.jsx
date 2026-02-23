@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useTheme } from "../context/AlterTheme";
 import { Link } from "react-router-dom";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, ArrowBigDown } from "lucide-react";
 
 const Home = () => {
   const [imagemAmpliada, setImagemAmpliada] = useState(null);
   const { theme, toggleTheme } = useTheme();
+  const destinyRef = useRef(null);
+
+  const hoverForRef = () => {
+    destinyRef.current.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0f172a] text-gray-900 dark:text-white selection:bg-yellow-500/30 transition-colors duration-300">
-      {/* Navbar Minimalista */}
       <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10  rounded-lg flex items-center justify-center">
@@ -35,7 +39,6 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-6 pt-16 pb-24 text-center">
         <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
           Seu delivery, sua marca, <br />
@@ -63,13 +66,24 @@ const Home = () => {
             Ver Demonstração
           </Link>
         </div>
+        <div
+          className="flex justify-center gap-4 pt-12 font-bold hover:cursor-pointer"
+          onClick={hoverForRef}
+        >
+          <ArrowBigDown className="text-yellow-400 levit" />
+          Imagens do sistema
+          <ArrowBigDown className="text-yellow-400 levit" />
+        </div>
         <div>
           {theme === "dark" ? (
-            <div className="mt-20 relative flex flex-col md:flex-row gap-10 justify-center">
+            <div
+              ref={destinyRef}
+              className="scroll-mt-5 mt-20 relative flex flex-col md:flex-row gap-10 justify-center"
+            >
               <div className="absolute inset-0 bg-yellow-500/10 blur-[120px] rounded-full"></div>
               <div className="relative border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-2xl hover:scale-[1.02] transition-transform duration-300">
                 <img
-                  src="/Pedidos-black.png"
+                  src="/Home-black.png"
                   alt="Dashboard do Sistema"
                   className="w-full h-auto cursor-pointer hover:scale-[1.02] transition-transform duration-300"
                   onClick={() => setImagemAmpliada("/Pedidos-black.png")}
@@ -77,7 +91,7 @@ const Home = () => {
               </div>
               <div className="relative border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-2xl hover:scale-[1.02] transition-transform duration-300">
                 <img
-                  src="/Produtos-black.png"
+                  src="/Pedidos-black.png"
                   alt="Dashboard do Sistema"
                   className="w-full h-auto cursor-pointer hover:scale-[1.02] transition-transform duration-300"
                   onClick={() => setImagemAmpliada("/Produtos-black.png")}
@@ -89,7 +103,7 @@ const Home = () => {
               <div className="absolute inset-0 bg-yellow-500/10 blur-[120px] rounded-full"></div>
               <div className="relative border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-2xl hover:scale-[1.02] transition-transform duration-300">
                 <img
-                  src="/Pedidos-white.png"
+                  src="/Home-white.png"
                   alt="Dashboard do Sistema"
                   className="w-full h-auto cursor-pointer hover:scale-[1.02] transition-transform duration-300"
                   onClick={() => setImagemAmpliada("/Pedidos-white.png")}
@@ -120,7 +134,7 @@ const Home = () => {
               </div>
               <div className="relative border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-2xl hover:scale-[1.02] transition-transform duration-300">
                 <img
-                  src="/Home-black.png"
+                  src="/Produtos-black.png"
                   alt="Dashboard do Sistema"
                   className="w-full h-auto cursor-pointer hover:scale-[1.02] transition-transform duration-300"
                   onClick={() => setImagemAmpliada("/Home-black.png")}
@@ -140,7 +154,7 @@ const Home = () => {
               </div>
               <div className="relative border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-2xl hover:scale-[1.02] transition-transform duration-300">
                 <img
-                  src="/Home-white.png"
+                  src="/Pedidos-white.png"
                   alt="Dashboard do Sistema"
                   className="w-full h-auto cursor-pointer hover:scale-[1.02] transition-transform duration-300"
                   onClick={() => setImagemAmpliada("/Home-white.png")}
@@ -150,8 +164,17 @@ const Home = () => {
           )}
         </div>
       </main>
-
-      {/* Features Rápidas */}
+      <section className="max-w-7xl mx-auto px-6 py-24 border-t border-gray-200 dark:border-gray-800">
+        <div className="flex flex-col ">
+          <div className="text-yellow-500 text-3xl  font-black ">
+            Alguns de nossos Clientes
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            Personalize cores e logotipos. Seu cliente verá a sua marca, não a
+            nossa.
+          </p>
+        </div>
+      </section>
       <section className="max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-gray-200 dark:border-gray-800">
         <div>
           <div className="text-yellow-500 text-3xl mb-4 font-black">01.</div>
@@ -178,19 +201,16 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="py-10 text-center text-gray-500 dark:text-gray-400 text-xs border-t border-gray-200 dark:border-gray-800">
         &copy; 2026 DeliverySaaS - Desenvolvido por David Souza.
       </footer>
 
-      {/* Modal / Lightbox */}
       {imagemAmpliada && (
         <div
           className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-200"
           onClick={() => setImagemAmpliada(null)}
         >
           <div className="relative max-w-7xl max-h-screen w-full flex flex-col items-center justify-center">
-            {/* Botão Fechar */}
             <button
               onClick={() => setImagemAmpliada(null)}
               className="absolute top-0 right-0 md:-top-8 md:-right-8 text-white/70 hover:text-yellow-500 transition-colors bg-black/50 md:bg-transparent p-2 rounded-full cursor-pointer"
@@ -211,7 +231,6 @@ const Home = () => {
               </svg>
             </button>
 
-            {/* Imagem Ampliada */}
             <img
               src={imagemAmpliada}
               alt="Visualização ampliada"

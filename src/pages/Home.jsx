@@ -55,7 +55,7 @@ const Home = () => {
             CRIAR MINHA LOJA AGORA
           </Link>
           <Link
-            to="/lebvil-burger"
+            to="/lebvil-burguer"
             target="_blank"
             rel="noopener noreferrer"
             className="px-10 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-xl text-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all border border-gray-200 dark:border-gray-700 cursor-pointer inline-block text-center"

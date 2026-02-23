@@ -9,6 +9,31 @@ const RegisterUser = () => {
     role: "ADMIN",
     password: "",
   });
+  const [passwordShow, setPasswordShow] = useState("");
+  const [validacoes, setValidacoes] = useState({
+    tamanho: true,
+    letraMaiuscula: true,
+    numero: true,
+    caracterEspecial: true,
+  });
+
+  const handlePasswordChange = (e) => {
+    const novaSenha = e.target.value;
+
+    setPasswordShow(novaSenha);
+
+    const tamanhoMinimo = novaSenha.length >= 8;
+    const temLetraMaiuscula = /[A-Z]/.test(novaSenha);
+    const temNumero = /[0-9]/.test(novaSenha);
+    const temCaracterEspecial = /[!@#$%^&*(),.?":{}|<>]/.test(novaSenha);
+
+    setValidacoes({
+      tamanho: tamanhoMinimo,
+      letraMaiuscula: temLetraMaiuscula,
+      numero: temNumero,
+      caracterEspecial: temCaracterEspecial,
+    });
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -71,11 +96,29 @@ const RegisterUser = () => {
             type="password"
             placeholder="Crie uma senha forte"
             className="w-full p-4 bg-[#0f172a] text-white rounded-xl outline-none border border-gray-600 focus:border-yellow-500"
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
+            onChange={(e) => {
+              setFormData({ ...formData, password: e.target.value });
+              handlePasswordChange(e);
+            }}
             required
           />
+          <div>
+            {!validacoes.letraMaiuscula && (
+              <p className="text-red-500 text-sm">
+                Senha deve conter letras maiusculas
+              </p>
+            )}
+            {!validacoes.tamanho && (
+              <p className="text-red-500 text-sm">
+                Senha deve conter no minímo 8 caracteres
+              </p>
+            )}
+            {!validacoes.caracterEspecial && (
+              <p className="text-red-500 text-sm">
+                Senha deve conter pelo menos um "!@#$%^&*(),.?":{}|"
+              </p>
+            )}
+          </div>
           <button className="w-full py-4 bg-yellow-500 text-[#0f172a] font-black rounded-xl hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/20">
             CRIAR CONTA
           </button>

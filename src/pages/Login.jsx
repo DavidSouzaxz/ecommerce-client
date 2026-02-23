@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../services/api";
+import { ArrowLeft } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -47,6 +48,15 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 dark:bg-gray-900">
+      <div>
+        <button
+          className="fixed top-8 md:left-20 md:top-10 flex justify-center text-center gap-2 hover:text-gray-300 cursor-pointer transition-colors font-bold"
+          onClick={() => navigate("/")}
+        >
+          <ArrowLeft className="size-4 mt-1" />
+          VOLTAR
+        </button>
+      </div>
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 dark:bg-gray-800">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black text-gray-800 dark:text-white">

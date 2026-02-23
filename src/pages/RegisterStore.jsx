@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../services/api";
-import { Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const RegisterStore = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ const RegisterStore = () => {
     openTime: "10:00:00",
     user: { id: localStorage.getItem("id") },
   });
-
+  const navigate = useNavigate();
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
@@ -32,6 +33,15 @@ const RegisterStore = () => {
 
   return (
     <div className="min-h-screen bg-[#0f172a] flex items-center justify-center p-4">
+      <div>
+        <button
+          className="fixed top-8 md:left-20 md:top-10 flex justify-center text-center gap-2 hover:text-gray-300 cursor-pointer transition-colors font-bold"
+          onClick={() => navigate("/")}
+        >
+          <ArrowLeft className="size-4 mt-1" />
+          VOLTAR
+        </button>
+      </div>
       <div className="bg-[#1e293b] p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
         <h2 className="text-3xl font-black text-white mb-2 text-center">
           Comece agora 🚀

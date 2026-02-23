@@ -56,7 +56,7 @@ const OrdersManager = ({ slug, tenant }) => {
         console.log("Novo pedido! Tentando tocar som...");
         const audio = audioRef.current;
         audio.currentTime = 0;
-        
+
         // Tenta tocar o MP3, se der erro (NotSupportedError), usa o beep
         audio.play().catch((e) => {
           console.warn("Erro ao tocar arquivo de áudio. Usando fallback:", e);
@@ -196,7 +196,7 @@ const OrdersManager = ({ slug, tenant }) => {
                     <span className="font-bold text-gray-800 dark:text-white">
                       {order.customerName}
                     </span>
-                    {/* Link direto para o WhatsApp do cliente */}
+
                     <a
                       href={`https://wa.me/55${order.customerPhone?.replace(/\D/g, "")}`}
                       target="_blank"

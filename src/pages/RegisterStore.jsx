@@ -20,7 +20,11 @@ const RegisterStore = () => {
       alert("Loja criada! ");
       window.location.href = `/${formData.slug}`;
     } catch (err) {
-      alert("Erro ao cadastrar empresa.");
+      if (err.response?.status === 409) {
+        alert("Já existe uma empresa com este nome");
+      } else {
+        alert("Erro ao cadastras empresa!");
+      }
     } finally {
       console.log(formData);
     }

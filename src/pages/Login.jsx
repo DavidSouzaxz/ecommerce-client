@@ -14,7 +14,7 @@ const Login = () => {
       const response = await api.post("/api/auth/login", { email, password });
 
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("id", response.data.id);
+      localStorage.setItem("id", response.data.user);
 
       alert("Login realizado com sucesso!");
       isPresentStore(response.data.token, response.data.tenantSlug);

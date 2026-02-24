@@ -16,9 +16,7 @@ const Navbar = ({
 
   return (
     <nav className="bg-white dark:bg-gray-900 sticky top-0 z-50 shadow-sm border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
-      {/* Parte Superior: Logo e Busca */}
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        {/* Logo e Nome */}
         <div className="flex items-center shrink-0">
           <img
             src={tenant?.logoUrl || "https://via.placeholder.com/40"}
@@ -36,7 +34,6 @@ const Navbar = ({
           )}
         </div>
 
-        {/* Barra de Pesquisa */}
         <div className="flex-1 max-w-md relative">
           <input
             type="text"
@@ -61,7 +58,6 @@ const Navbar = ({
           </svg>
         </div>
 
-        {/* Ícone de Perfil/Login */}
         <div className="flex items-center gap-2">
           <button
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-500 dark:text-gray-400 transition-colors"

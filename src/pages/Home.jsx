@@ -1,21 +1,55 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTheme } from "../context/AlterTheme";
 import { Link } from "react-router-dom";
-import { Sun, Moon, ArrowBigDown } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  ArrowBigDown,
+  Menu,
+  X,
+  User,
+  LayoutPanelTop,
+  SmilePlus,
+  Info,
+} from "lucide-react";
 
 const Home = () => {
   const [imagemAmpliada, setImagemAmpliada] = useState(null);
   const { theme, toggleTheme } = useTheme();
   const destinyRef = useRef(null);
-
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleMenu = () => setIsOpen(!isOpen);
   const hoverForRef = () => {
     destinyRef.current.scrollIntoView({ behavior: "smooth" });
   };
+  const [headerFixed, setHeaderFixed] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setHeaderFixed(true);
+      } else {
+        setHeaderFixed(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0f172a] text-gray-900 dark:text-white selection:bg-yellow-500/30 transition-colors duration-300">
-      <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
-        <div className="flex items-center gap-2">
+      <nav
+        className={`md:dark:bg-transparent md:bg-transparent max-w-7xl bg-gray-100 md:mx-auto md:px-6 md:py-8 flex justify-between items-center dark:bg-gray-800 py-5 ${
+          headerFixed
+            ? "fixed w-full m-0 top-0 z-1 bg-white shadow-md  dark:bg-gray-800 md:relative md:bg-transparent md:shadow-none md:dark:bg-transparent"
+            : "relative bg-transparent"
+        }`}
+      >
+        <div className="flex items-center gap-2 p-2 md:p-0">
           <div className="w-10 h-10  rounded-lg flex items-center justify-center">
             <img src="./logo.png" alt="logo" />
           </div>
@@ -23,7 +57,7 @@ const Home = () => {
             DELIVERY<span className="text-yellow-500">SAAS</span>
           </span>
         </div>
-        <div className="flex justify-center items-center gap-6">
+        <div className="hidden md:flex justify-center items-center  gap-6">
           <Link
             to="/login"
             className="text-sm font-bold hover:text-yellow-500 transition-colors"
@@ -36,6 +70,49 @@ const Home = () => {
           >
             {theme === "light" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
+        </div>
+        <div className="md:hidden flex items-center relative justify-end">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:cursor-pointer transition-all"
+          >
+            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+          <button
+            onClick={toggleMenu}
+            className=" text-gray-600 p-2 outline-none dark:text-gray-50"
+          >
+            {isOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+          {isOpen && (
+            <div
+              className="md:hidden bg-gray-100 border-t dark:border-gray-700 border-gray-200 px-4 pt-2 pb-6 mt-6.5
+              shadow-lg animate-in slide-in-from-top duration-300 dark:bg-gray-800  w-55 absolute top-full rounded-bl-xl"
+            >
+              <Link
+                to={"/login"}
+                className="p-2 flex font-bold justify-end gap-2"
+              >
+                <LayoutPanelTop size={20} /> Painel Lojista
+              </Link>
+              <hr className="opacity-20" />
+              <Link
+                to={"/register-user"}
+                className="p-2 flex font-bold justify-end gap-2"
+              >
+                <SmilePlus size={20} />
+                Cadastro
+              </Link>
+              <hr className="opacity-20" />
+              <Link
+                to={"/about"}
+                className="p-2 flex font-bold justify-end gap-2"
+              >
+                <Info size={20} />
+                Sobre
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -166,12 +243,12 @@ const Home = () => {
       </main>
       <section className="max-w-7xl mx-auto px-6 py-24 border-t border-gray-200 dark:border-gray-800">
         <div className="flex flex-col ">
-          <div className="text-yellow-500 text-3xl  font-black ">
+          <div className="md:text-justify  text-center text-yellow-500 text-3xl  font-black ">
             Alguns de nossos Clientes
           </div>
-          <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-            Personalize cores e logotipos. Seu cliente verá a sua marca, não a
-            nossa.
+          <p className="text-gray-600 dark:text-gray-400 text-sm  md:text-justify  text-center leading-relaxed">
+            Clientes que confiaram em nossos serviços, atualmente desfrutam de
+            um sistema responsivo e funcional.
           </p>
         </div>
       </section>
